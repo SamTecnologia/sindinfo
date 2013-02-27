@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_rs_csind_empresa" value="name:csind_emp_id;datatype:int,name:csind_emp_cnpj;datatype:string,name:csind_emp_razao;datatype:string" />
+</info>

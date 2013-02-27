@@ -1,0 +1,5 @@
+29358162000100,2013,Empresa Teste de Composição de Arquivo
+317105,01/02/2012,0045.00,Fulano de Tal
+317205,01/03/2010,0060.32,Cicrano de Tal
+412110,01/02/2013,0013.57,Bertrano de Tal
+3
