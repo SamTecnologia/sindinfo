@@ -27,9 +27,9 @@ if ($linha_rs_empresa['csind_emp_id']<> NULL)
 	$nome_arquivo = $fn; // Cadastra arquivo no banco
 	echo $nome_arquivo;
 	mysql_select_db($database_sindicato,$sindicato); // Conecta com o Banco
-	/*$query_inserirdados = sprintf("INSERT INTO  `sindinfo_sindicato`.`bl_csind_arquivo` (`csind_arq_data`,`csind_emp_id`,`csind_arq_referencia`,`arquivo`) VALUES ( '$data','$emp_id','$ano','$nome_arquivo')");
+	$query_inserirdados = sprintf("INSERT INTO  `sindinfo_sindicato`.`bl_csind_arquivo` (`csind_arq_data`,`csind_emp_id`,`csind_arq_referencia`,`arquivo`) VALUES ( '$data','$emp_id','$ano','$nome_arquivo')");
 	$Result1 = mysql_query($query_inserirdados, $sindicato) or die(mysql_error());// Insert no banco de dados
-	echo '<br />'.$query_inserirdados;*/
+	echo '<br />'.$query_inserirdados;
 	//Consulta empresa e referencia inserida
 	mysql_select_db($database_sindicato,$sindicato); // conecta com o Banco
 	$query_rs_arquivo = sprintf("SELECT * FROM bl_csind_arquivo WHERE csind_emp_id = '$emp_id' AND csind_arq_referencia = '$ano'");
@@ -58,8 +58,79 @@ if ($linha_rs_empresa['csind_emp_id']<> NULL)
 	echo '<br />'.$inserefuncionario;
 		
 	}
-	
 }
+else
+{
+	$cnpj = substr($sua_linha,0,14); // Armazena o cnpj para realizar consulta no banco
+	echo $cnpj.'<br />';
+	$ano = substr($sua_linha,15,4); // Armazena o ano
+	echo $ano.'<br />';
+	$razao_social = substr($sua_linha,20); //Armazena a razão social
+	
+	// Cadastra a Empresa no Banco
+	
+	mysql_select_db($database_sindicato,$sindicato); //Conexão com o banco
+	$insereempresa = sprintf("INSERT INTO bl_csind_empresa(csind_emp_cnpj, csind_emp_razao) VALUES ('$cnpj', '$razao_social')");
+	$result2 = mysql_query($insereempresa,$sindicato) or die(mysql_error()); // Insert no banco de dados
+	echo '<br />'.$insereempresa;
+	if ($result2)
+	{
+		echo "<br />Empresa Cadastrada com Sucesso!";
+	}
+	else
+	{
+		echo "Falha ao Cadastrar! <br />".mysql_error();
+	}
+	
+	// Inicio da consulta pelo cnpj
+mysql_select_db($database_sindicato,$sindicato); //Conexao com o banco
+$query_rs_empresa_nova = sprintf("SELECT * FROM bl_csind_empresa WHERE csind_emp_cnpj = $empresa"); //consulta
+$rs_empresa_nova = mysql_query($query_rs_empresa_nova,$sindicato) or die (mysql_error());
+$linha_rs_empresa_nova = mysql_fetch_assoc($rs_empresa_nova);
+$totaldeLinhas_rs_empresa_nova = mysql_num_rows($rs_empresa_nova);
 
+echo 'Empresa Já Cadastrada <br />';
+	$data = date('Y-m-d');
+	echo $data;
+	$emp_id = $linha_rs_empresa_nova['csind_emp_id'];
+	echo '<br />'. $emp_id;
+	$ano = substr($sua_linha,15,4); // Armazena o ano
+	echo '<br />'. $ano . '<br />';
+	$nome_arquivo = $fn; // Cadastra arquivo no banco
+	echo $nome_arquivo;
+	mysql_select_db($database_sindicato,$sindicato); // Conecta com o Banco
+	$query_inserirdados = sprintf("INSERT INTO  `sindinfo_sindicato`.`bl_csind_arquivo` (`csind_arq_data`,`csind_emp_id`,`csind_arq_referencia`,`arquivo`) VALUES ( '$data','$emp_id','$ano','$nome_arquivo')");
+	$Result1 = mysql_query($query_inserirdados, $sindicato) or die(mysql_error());// Insert no banco de dados
+	echo '<br />'.$query_inserirdados;
+	//Consulta empresa e referencia inserida
+	mysql_select_db($database_sindicato,$sindicato); // conecta com o Banco
+	$query_rs_arquivo = sprintf("SELECT * FROM bl_csind_arquivo WHERE csind_emp_id = '$emp_id' AND csind_arq_referencia = '$ano'");
+	$rs_arquivo = mysql_query($query_rs_arquivo, $sindicato) or die(mysql_error());
+	$linha_rs_arquivo = mysql_fetch_assoc($rs_arquivo);
+	$totaldeLinhas_rs_arquivo = mysql_num_rows($rs_arquivo);
+	echo '<br /> Número do Arquivo ' . $linha_rs_arquivo['csind_arq_id'].'<br />';
+	//Final consulta
+	
+	//Condiçao para inserir as linhas dos arquivos
+	for ($registros = 1; $registros <= $ultima_liha; $registros++)
+	{
+		$arq_id = $linha_rs_arquivo['csind_arq_id'];
+		echo $arq_id.'<br />';
+		$cbo = substr($f_contents[$registros],0,6);
+		echo $cbo.'<br />';
+		$admissao = substr($f_contents[$registros],13,4).'-'.substr($sua_linha,10,2).'-'.substr($sua_linha,8,2);
+		echo $admissao.'<br />';
+		$valor = substr($f_contents[$registros],18,7);
+		echo $valor.'<br />';
+		$colaborador = substr($f_contents[$registros],26);
+		echo $colaborador.'<br />';
+		mysql_select_db($database_sindicato,$sindicato); //Conexao com o Banco de Dados
+		$inserefuncionario = sprintf("INSERT INTO bl_csind_contribuicao(csind_arq_id,csind_cont_cbo,csind_cont_admissao,csind_cont_valor,csind_cont_nome) VALUES ($arq_id,'$cbo','$admissao',$valor,'$colaborador')");
+	$Result1 = mysql_query($inserefuncionario, $sindicato) or die(mysql_error());// Insert no banco de dados
+	echo '<br />'.$inserefuncionario;
+		
+	}
+
+}
 
 ?>
